@@ -69,15 +69,15 @@ ENV CPPFLAGS="-I/usr/local/opt/zlib/include -I/usr/local/opt/sqlite3/include -I/
 
 
 ARG DEPENDENCIES="\
-      autoconf \
+        autoconf \
 		automake \
 		bzip2 \
 		dpkg-dev \
 		file \
-      git \
-      clang-9 \
-      lld-9 \
-      imagemagick \
+		git \
+		clang-9 \
+		lld-9 \
+		imagemagick \
 		libbz2-dev \
 		libc6-dev \
 		libcurl4-openssl-dev \
@@ -177,7 +177,7 @@ RUN cd /usr/local/bin \
 RUN apt-get update -qq \
  && apt-get install -qqy --no-install-recommends \
 		libexpat1 \
-      libssl1.1 \
+        libssl1.1 \
  && ldconfig \
  && python /tmp/get-pip.py \
 		--disable-pip-version-check \
