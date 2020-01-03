@@ -8,7 +8,7 @@ Python compiled by LLVM image.
 ## Tags
 
 | Tag | Shell |
-|:---:||:----:|
+|:---:|:----:|
 | [latest](https://github.com/poad/docker-llvm-python/tree/master/ubuntu) | bash |
 | [zsh](https://github.com/poad/docker-llvm-python/tree/master/ubuntu-zsh) | zsh |
 | [bionic](https://github.com/poad/docker-llvm-python/tree/master/ubuntu) | bash |
