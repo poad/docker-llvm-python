@@ -1,5 +1,5 @@
 ARG PYTHON_XZ_GPG_KEY="E3FF2839C048B25C084DEBE9B26995E310250568"
-ARG PYTHON_VERSION="3.8.1"
+ARG PYTHON_VERSION="3.8.2"
 ARG PYTHON_PIP_VERSION="20.0.2"
 # https://github.com/pypa/get-pip
 ARG PIP_DOWNLOAD_HASH="42ad3426cb1ef05863521d7988d5f7fec0c99560"
@@ -65,8 +65,8 @@ ENV LANG=C.UTF-8 \
 
 ENV CPPFLAGS="-I/usr/local/opt/zlib/include -I/usr/local/opt/sqlite3/include -I/usr/local/opt/openssl/include" \
     LDFLAGS="-L/usr/local/lib -L/usr/local/opt/openssl/lib" \
-    CC="/usr/bin/clang-9 -O5 -fsanitize=undefined" \
-    CXX="clang++-9 -O5 -fsanitize=undefined -fno-sanitize=vptr" \
+    CC="/usr/bin/clang-10 -O5 -fsanitize=undefined" \
+    CXX="clang++-910-O5 -fsanitize=undefined -fno-sanitize=vptr" \
     PATH=/usr/local/python/bin:/usr/local/bin:$PATH
 
 
@@ -77,8 +77,8 @@ ARG DEPENDENCIES="\
 		dpkg-dev \
 		file \
 		git \
-		clang-9 \
-		lld-9 \
+		clang-10 \
+		lld-10 \
 		imagemagick \
 		libbz2-dev \
 		libc6-dev \
@@ -121,7 +121,7 @@ RUN apt-get update -qq \
  && apt-get install --no-install-recommends -qqy ca-certificates gnupg2 binutils apt-utils \
  && curl -sL https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
  && echo "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic main" >> /etc/apt/sources.list.d/llvm-toolchain.list \
- && echo "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main" >> /etc/apt/sources.list.d/llvm-toolchain.list \
+ && echo "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" >> /etc/apt/sources.list.d/llvm-toolchain.list \
  && apt-get update -qq \
  && apt-get install -qqy --no-install-recommends ${DEPENDENCIES} \
  && apt-get clean \
