@@ -1,7 +1,8 @@
 # docker-llvm-python
 
-[![Docker Automated build](https://img.shields.io/docker/cloud/automated/poad/docker-llvm-python?style=flat-square)](https://hub.docker.com/r/poad/docker-llvm-python)
-[![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/poad/docker-llvm-python)](https://hub.docker.com/r/poad/docker-llvm-python/builds)
+![GitHub Actions](https://github.com/poad/docker-llvm-python/workflows/Docker%20image%20build%20push/badge.svg)
+![Docker image build](https://github.com/poad/docker-llvm-python/workflows/Docker%20image%20build%20push/badge.svg?event=pull_request)
+![Docker image push](https://github.com/poad/docker-llvm-python/workflows/Docker%20image%20build%20push/badge.svg?event=deployment)
 
 Python compiled by LLVM image.
 
