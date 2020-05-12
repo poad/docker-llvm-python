@@ -53,7 +53,7 @@ RUN wget -O get-pip.py "${PYTHON_GET_PIP_URL}" \
 
 
 
-FROM buildpack-deps:bionic-curl AS python
+FROM buildpack-deps:focal-curl AS python
 
 # ensure local python is preferred over distribution python
 ENV PATH /usr/local/bin:$PATH
@@ -120,8 +120,8 @@ RUN apt-get update -qq \
  && apt-get autoremove --purge -qqy gcc \
  && apt-get install --no-install-recommends -qqy ca-certificates gnupg2 binutils apt-utils \
  && curl -sL https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
- && echo "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic main" >> /etc/apt/sources.list.d/llvm-toolchain.list \
- && echo "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" >> /etc/apt/sources.list.d/llvm-toolchain.list \
+ && echo "deb http://apt.llvm.org/focal/ llvm-toolchain-focal main" >> /etc/apt/sources.list.d/llvm-toolchain.list \
+ && echo "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-10 main" >> /etc/apt/sources.list.d/llvm-toolchain.list \
  && apt-get update -qq \
  && apt-get install -qqy --no-install-recommends ${DEPENDENCIES} \
  && apt-get clean \
@@ -152,7 +152,7 @@ RUN gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
  && python3 --version
 
 
-FROM ubuntu:bionic
+FROM ubuntu:focal
 
 LABEL maintainer="Kenji Saito<ken-yo@mbr.nifty.com>"
 
