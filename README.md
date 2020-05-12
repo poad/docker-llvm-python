@@ -11,5 +11,5 @@ Python compiled by LLVM image.
 |:---:|:----:|
 | [latest](https://github.com/poad/docker-llvm-python/tree/master/ubuntu) | bash |
 | [zsh](https://github.com/poad/docker-llvm-python/tree/master/ubuntu-zsh) | zsh |
-| [bionic](https://github.com/poad/docker-llvm-python/tree/master/ubuntu) | bash |
-| [bionic-zsh](https://github.com/poad/docker-llvm-python/tree/master/ubuntu-zsh) | zsh |
+| [focal](https://github.com/poad/docker-llvm-python/tree/master/ubuntu) | bash |
+| [focal-zsh](https://github.com/poad/docker-llvm-python/tree/master/ubuntu-zsh) | zsh |
