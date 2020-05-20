@@ -24,7 +24,9 @@ jobs:
       if: github.event_name == 'pull_request' && github.event_name != 'schedule'
     - name: Build ${{ matrix.dir_tag.tag }}
       if: github.event_name == 'pull_request' && github.event_name != 'schedule'
-      run: DOCKERFILE_PATH=${{ matrix.dir_tag.dir }}/Dockerfile DOCKER_TAG=${{ matrix.dir_tag.tag }} IMAGE_NAME=poad/docker-llvm-python:${{ matrix.dir_tag.tag }} hooks/build
+      run: |
+        IMAGE_NAME=poad/docker-llvm-python:${{ matrix.dir_tag.tag }} && \
+        DOCKERFILE_PATH=${{ matrix.dir_tag.dir }}/Dockerfile IMAGE_NAME=${IMAGE_NAME} hooks/build
 
   docker_push:
     runs-on: ubuntu-latest
@@ -43,6 +45,7 @@ jobs:
       if: github.event_name != 'pull_request' && github.event_name != 'schedule' && env.CHANGE_STATE != 'changed'
       run: |
         echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u poad --password-stdin && \
-        DOCKERFILE_PATH=${{ matrix.dir_tag.dir }}/Dockerfile DOCKER_TAG=${{ matrix.dir_tag.tag }} IMAGE_NAME=poad/docker-llvm-python:${{ matrix.dir_tag.tag }} hooks/build && \
-        docker push $IMAGE_NAME && \
+        IMAGE_NAME=poad/docker-llvm-python:${{ matrix.dir_tag.tag }} && \
+        DOCKERFILE_PATH=${{ matrix.dir_tag.dir }}/Dockerfile IMAGE_NAME=${IMAGE_NAME} hooks/build && \
+        docker push ${IMAGE_NAME} && \
         cd ${CUR}
