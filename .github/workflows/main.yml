@@ -27,7 +27,11 @@ jobs:
       run: |
         IMAGE_NAME=poad/docker-llvm-python:${{ matrix.dir_tag.tag }} && \
         DOCKERFILE_PATH=${{ matrix.dir_tag.dir }}/Dockerfile IMAGE_NAME=${IMAGE_NAME} hooks/build
-
+    - name: Hadolint
+      uses: brpaz/hadolint-action@master
+      with:
+        dockerfile: ${{ matrix.dir_tag.dir }}/Dockerfile
+  
   docker_push:
     runs-on: ubuntu-latest
     strategy:
