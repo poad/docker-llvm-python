@@ -7,7 +7,7 @@ ARG PYTHON_GET_PIP_URL=https://github.com/pypa/get-pip/raw/${PIP_DOWNLOAD_HASH}/
 ARG PYTHON_GET_PIP_SHA256="a30ff8a3446c592c6d70403a82483716e7b759e8eecba2c8d3f6ecfb34a8d6d7"
 
 
-FROM alpine:latest AS downloader
+FROM alpine:3 AS downloader
 
 ARG PYTHON_XZ_GPG_KEY
 ARG PYTHON_VERSION
@@ -25,20 +25,17 @@ ENV PATH=/usr/local/python/bin:$PATH \
 RUN apk add --no-cache --virtual .build-deps \
     curl \
     gnupg \
-    xz \
-	wget
+    xz
 
 WORKDIR /tmp
-RUN wget -O get-pip.py "${PYTHON_GET_PIP_URL}" \
+RUN curl -sSLo get-pip.py "${PYTHON_GET_PIP_URL}" \
  && echo "${PYTHON_GET_PIP_SHA256} *get-pip.py" | sha256sum -c - \
  && set -ex \
  \
- && wget -O python.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-${PYTHON_VERSION}.tar.xz" \
- && wget -O python.tar.xz.asc "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-${PYTHON_VERSION}.tar.xz.asc" \
+ && curl -sSLo python.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-${PYTHON_VERSION}.tar.xz" \
+ && curl -sSLo python.tar.xz.asc "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-${PYTHON_VERSION}.tar.xz.asc" \
  && export GNUPGHOME="$(mktemp -d)" \
- && for key in \
-    "${PYTHON_XZ_GPG_KEY}" \
- ; do \
+ && for key in "${PYTHON_XZ_GPG_KEY}"; do \
    gpg --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "${key}" || \
    gpg --batch --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "${key}" || \
    gpg --batch --keyserver hkp://pgp.mit.edu:80 --recv-keys "${key}" ; \
