@@ -28,7 +28,8 @@ jobs:
         IMAGE_NAME=poad/docker-llvm-python:${{ matrix.dir_tag.tag }} && \
         DOCKERFILE_PATH=${{ matrix.dir_tag.dir }}/Dockerfile IMAGE_NAME=${IMAGE_NAME} hooks/build
     - name: Hadolint
-      uses: brpaz/hadolint-action@master
+      if: github.event_name == 'pull_request' && github.event_name != 'schedule'
+      uses: brpaz/hadolint-action@v1.3.1
       with:
         dockerfile: ${{ matrix.dir_tag.dir }}/Dockerfile
   
