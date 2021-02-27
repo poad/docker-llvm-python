@@ -1,11 +1,11 @@
 ARG PYTHON_XZ_GPG_KEY="E3FF2839C048B25C084DEBE9B26995E310250568"
-ARG PYTHON_VERSION="3.9.0"
-ARG PYTHON_PIP_VERSION="20.2"
-# https://github.com/docker-library/python/blob/master/3.8/buster/Dockerfile
-ARG PIP_DOWNLOAD_HASH="cb5b85a8e0c3d13ced611b97816d7490d2f1497e"
+ARG PYTHON_VERSION="3.9.2"
+ARG PYTHON_PIP_VERSION="21.0.1"
+# https://github.com/docker-library/python/blob/master/3.9/buster/Dockerfile
+ARG PIP_DOWNLOAD_HASH="b60e2320d9e8d02348525bd74e871e466afdf77c"
 ARG PYTHON_GET_PIP_URL=https://github.com/pypa/get-pip/raw/${PIP_DOWNLOAD_HASH}/get-pip.py
-ARG PYTHON_GET_PIP_SHA256="a30ff8a3446c592c6d70403a82483716e7b759e8eecba2c8d3f6ecfb34a8d6d7"
-
+ARG PYTHON_GET_PIP_SHA256="c3b81e5d06371e135fb3156dc7d8fd6270735088428c4a9a5ec1f342e2024565"
+ARG LLVM_VERSION=11
 
 FROM alpine:3 AS downloader
 
@@ -52,6 +52,8 @@ RUN curl -sSLo get-pip.py "${PYTHON_GET_PIP_URL}" \
 
 FROM buildpack-deps:focal-curl AS python
 
+ARG LLVM_VERSION
+
 # ensure local python is preferred over distribution python
 ENV PATH /usr/local/bin:$PATH
 
@@ -62,8 +64,8 @@ ENV LANG=C.UTF-8 \
 
 ENV CPPFLAGS="-I/usr/local/opt/zlib/include -I/usr/local/opt/sqlite3/include -I/usr/local/opt/openssl/include" \
     LDFLAGS="-L/usr/local/lib -L/usr/local/opt/openssl/lib" \
-    CC="/usr/bin/clang-10 -O5 -fsanitize=undefined" \
-    CXX="clang++-910-O5 -fsanitize=undefined -fno-sanitize=vptr" \
+    CC="/usr/bin/clang-${LLVM_VERSION} -O5 -fsanitize=undefined" \
+    CXX="clang++-${LLVM_VERSION}-O5 -fsanitize=undefined -fno-sanitize=vptr" \
     PATH=/usr/local/python/bin:/usr/local/bin:$PATH
 
 
@@ -74,8 +76,8 @@ ARG DEPENDENCIES="\
 		dpkg-dev \
 		file \
 		git \
-		clang-10 \
-		lld-10 \
+		clang-${LLVM_VERSION} \
+		lld-${LLVM_VERSION} \
 		imagemagick \
 		libbz2-dev \
 		libc6-dev \
@@ -118,7 +120,7 @@ RUN apt-get update -qq \
  && apt-get install --no-install-recommends -qqy ca-certificates gnupg2 binutils apt-utils \
  && curl -sL https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
  && echo "deb http://apt.llvm.org/focal/ llvm-toolchain-focal main" >> /etc/apt/sources.list.d/llvm-toolchain.list \
- && echo "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-10 main" >> /etc/apt/sources.list.d/llvm-toolchain.list \
+ && echo "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-${LLVM_VERSION} main" >> /etc/apt/sources.list.d/llvm-toolchain.list \
  && apt-get update -qq \
  && apt-get install -qqy --no-install-recommends ${DEPENDENCIES} \
  && apt-get clean \
