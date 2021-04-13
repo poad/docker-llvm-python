@@ -3,10 +3,9 @@ ARG PYTHON_VERSION="3.9.4"
 ARG PYTHON_PIP_VERSION="21.0.1"
 # https://github.com/docker-library/python/blob/master/3.9/buster/Dockerfile
 ARG PIP_DOWNLOAD_HASH="29f37dbe6b3842ccd52d61816a3044173962ebeb"
-ARG PYTHON_GET_PIP_URL=https://github.com/pypa/get-pip/raw/${PIP_DOWNLOAD_HASH}/public/get-pip.py
+ARG PYTHON_GET_PIP_URL="https://github.com/pypa/get-pip/raw/${PIP_DOWNLOAD_HASH}/public/get-pip.py"
 ARG PYTHON_GET_PIP_SHA256="e03eb8a33d3b441ff484c56a436ff10680479d4bd14e59268e67977ed40904de"
 ARG LLVM_VERSION=11
-
 
 FROM alpine:3 AS downloader
 
@@ -66,7 +65,7 @@ ENV LANG=C.UTF-8 \
 ENV CPPFLAGS="-I/usr/local/opt/zlib/include -I/usr/local/opt/sqlite3/include -I/usr/local/opt/openssl/include" \
     LDFLAGS="-L/usr/local/lib -L/usr/local/opt/openssl/lib" \
     CC="/usr/bin/clang-${LLVM_VERSION} -O5 -fsanitize=undefined" \
-    CXX="clang++-${LLVM_VERSION} -O5 -fsanitize=undefined -fno-sanitize=vptr" \
+    CXX="clang++-${LLVM_VERSION}-O5 -fsanitize=undefined -fno-sanitize=vptr" \
     PATH=/usr/local/python/bin:/usr/local/bin:$PATH
 
 
@@ -151,8 +150,51 @@ RUN gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
  \
  && python3 --version
 
+FROM ubuntu:focal AS default
 
-FROM poad/docker-zsh:focal
+LABEL maintainer="Kenji Saito<ken-yo@mbr.nifty.com>"
+
+ARG PYTHON_PIP_VERSION
+
+USER root
+
+ENV PATH=/usr/local/bin:${PATH}
+
+ENV LANG=C.UTF-8 \
+    DEBIAN_FRONTEND=noninteractive
+
+COPY --from=python /usr/local/python /usr/local
+COPY --from=downloader /tmp/get-pip.py /tmp/get-pip.py
+
+# make some useful symlinks that are expected to exist
+RUN cd /usr/local/bin \
+	&& ln -s idle3 idle \
+	&& ln -s pydoc3 pydoc \
+	&& ln -s python3 python \
+	&& ln -s python3-config python-config
+
+RUN apt-get update -qq \
+ && apt-get install -qqy --no-install-recommends \
+		libexpat1 \
+      	libssl1.1 \
+ && ldconfig \
+ && python /tmp/get-pip.py \
+		--disable-pip-version-check \
+		--no-cache-dir \
+		"pip==${PYTHON_PIP_VERSION}" \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/* /tmp/* /var/log/apt/* /var/log/alternatives.log /var/log/dpkg.log /var/log/faillog /var/log/lastlog
+
+RUN groupadd -g 1000 python \
+ && useradd -g 1000 -l -m -s /bin/bash -u 1000 python
+
+USER python
+
+ENV PATH=/home/python/.local/bin:/usr/local/bin:${PATH}
+
+WORKDIR /home/python
+
+FROM poad/docker-zsh:focal AS zsh
 
 LABEL maintainer="Kenji Saito<ken-yo@mbr.nifty.com>"
 
