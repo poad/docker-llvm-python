@@ -1,8 +1,8 @@
 # docker-llvm-python
 
-![GitHub Actions](https://github.com/poad/docker-llvm-python/workflows/Docker%20image%20build%20push/badge.svg)
-![Docker image build](https://github.com/poad/docker-llvm-python/workflows/Docker%20image%20build%20push/badge.svg?event=pull_request)
-![Docker image push](https://github.com/poad/docker-llvm-python/workflows/Docker%20image%20build%20push/badge.svg?event=deployment)
+[![Docker image build push](https://github.com/poad/docker-llvm-python/actions/workflows/main.yml/badge.svg)](https://github.com/poad/docker-llvm-python/actions/workflows/main.yml)
+[![Docker image build push](https://github.com/poad/docker-llvm-python/actions/workflows/main.yml/badge.svg?event=pull_request)](https://github.com/poad/docker-llvm-python/actions/workflows/main.yml)
+[![Docker image build push](https://github.com/poad/docker-llvm-python/actions/workflows/main.yml/badge.svg?event=push)](https://github.com/poad/docker-llvm-python/actions/workflows/main.yml)
 
 Python compiled by LLVM image.
 
