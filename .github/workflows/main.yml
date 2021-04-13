@@ -13,44 +13,42 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dir_tag: [
-          { dir: 'ubuntu', tag: 'focal' },
-          { dir: 'ubuntu-zsh', tag: 'focal-zsh' },
-          { dir: 'ubuntu-zsh', tag: 'zsh' },
-          { dir: 'ubuntu', tag: 'latest' }
+        stage_tag: [
+          { stage: 'default', tag: 'focal' },
+          { stage: 'zsh', tag: 'focal-zsh' },
+          { stage: 'zsh', tag: 'zsh' },
+          { stage: 'default', tag: 'latest' }
         ]
     steps:
     - uses: actions/checkout@master
       if: github.event_name == 'pull_request' && github.event_name != 'schedule'
-    - name: Build ${{ matrix.dir_tag.tag }}
+    - name: Build ${{ matrix.stage_tag.tag }}
       if: github.event_name == 'pull_request' && github.event_name != 'schedule'
-      run: |
-        IMAGE_NAME=poad/docker-llvm-python:${{ matrix.dir_tag.tag }} && \
-        DOCKERFILE_PATH=${{ matrix.dir_tag.dir }}/Dockerfile IMAGE_NAME=${IMAGE_NAME} hooks/build
+      run: docker build --rm --target="${{ matrix.stage_tag.stage }}" .
     - name: Hadolint
       if: github.event_name == 'pull_request' && github.event_name != 'schedule'
       uses: brpaz/hadolint-action@v1.3.1
       with:
-        dockerfile: ${{ matrix.dir_tag.dir }}/Dockerfile
+        dockerfile: ./Dockerfile
   
   docker_push:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dir_tag: [
-          { dir: 'ubuntu', tag: 'focal' },
-          { dir: 'ubuntu-zsh', tag: 'focal-zsh' },
-          { dir: 'ubuntu-zsh', tag: 'zsh' },
-          { dir: 'ubuntu', tag: 'latest' }
+        stage_tag: [
+          { stage: 'default', tag: 'focal' },
+          { stage: 'zsh', tag: 'focal-zsh' },
+          { stage: 'zsh', tag: 'zsh' },
+          { stage: 'default', tag: 'latest' }
         ]
     steps:
     - uses: actions/checkout@master
-      if: github.event_name != 'pull_request'
-    - name: Build ${{ matrix.dir_tag.tag }} and push
+      if: github.event_name == 'pull_request' && github.event_name != 'schedule'
+    - name: Build ${{ matrix.stage_tag.tag }} and push
       if: github.event_name != 'pull_request'
       run: |
         echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u poad --password-stdin && \
         IMAGE_NAME=poad/docker-llvm-python:${{ matrix.dir_tag.tag }} && \
-        DOCKERFILE_PATH=${{ matrix.dir_tag.dir }}/Dockerfile IMAGE_NAME=${IMAGE_NAME} hooks/build && \
+        docker build --rm --target="${{ matrix.stage_tag.stage }}" -t ${IMAGE_NAME} . && \
         docker push ${IMAGE_NAME} && \
         cd ${CUR}

@@ -1,10 +1,10 @@
 ARG PYTHON_XZ_GPG_KEY="E3FF2839C048B25C084DEBE9B26995E310250568"
-ARG PYTHON_VERSION="3.9.2"
+ARG PYTHON_VERSION="3.9.4"
 ARG PYTHON_PIP_VERSION="21.0.1"
 # https://github.com/docker-library/python/blob/master/3.9/buster/Dockerfile
-ARG PIP_DOWNLOAD_HASH="b60e2320d9e8d02348525bd74e871e466afdf77c"
-ARG PYTHON_GET_PIP_URL=https://github.com/pypa/get-pip/raw/${PIP_DOWNLOAD_HASH}/get-pip.py
-ARG PYTHON_GET_PIP_SHA256="c3b81e5d06371e135fb3156dc7d8fd6270735088428c4a9a5ec1f342e2024565"
+ARG PIP_DOWNLOAD_HASH="29f37dbe6b3842ccd52d61816a3044173962ebeb"
+ARG PYTHON_GET_PIP_URL="https://github.com/pypa/get-pip/raw/${PIP_DOWNLOAD_HASH}/public/get-pip.py"
+ARG PYTHON_GET_PIP_SHA256="e03eb8a33d3b441ff484c56a436ff10680479d4bd14e59268e67977ed40904de"
 ARG LLVM_VERSION=11
 
 FROM alpine:3 AS downloader
@@ -150,8 +150,7 @@ RUN gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
  \
  && python3 --version
 
-
-FROM ubuntu:focal
+FROM ubuntu:focal AS default
 
 LABEL maintainer="Kenji Saito<ken-yo@mbr.nifty.com>"
 
@@ -194,3 +193,43 @@ USER python
 ENV PATH=/home/python/.local/bin:/usr/local/bin:${PATH}
 
 WORKDIR /home/python
+
+FROM poad/docker-zsh:focal AS zsh
+
+LABEL maintainer="Kenji Saito<ken-yo@mbr.nifty.com>"
+
+ARG PYTHON_PIP_VERSION
+
+USER root
+
+ENV PATH=/usr/local/bin:${PATH}
+
+ENV LANG=C.UTF-8 \
+    DEBIAN_FRONTEND=noninteractive
+
+COPY --from=python /usr/local/python /usr/local
+COPY --from=downloader /tmp/get-pip.py /tmp/get-pip.py
+
+# make some useful symlinks that are expected to exist
+RUN cd /usr/local/bin \
+	&& ln -s idle3 idle \
+	&& ln -s pydoc3 pydoc \
+	&& ln -s python3 python \
+	&& ln -s python3-config python-config
+
+RUN apt-get update -qq \
+ && apt-get install -qqy --no-install-recommends \
+		libexpat1 \
+        libssl1.1 \
+ && ldconfig \
+ && python /tmp/get-pip.py \
+		--disable-pip-version-check \
+		--no-cache-dir \
+		"pip==${PYTHON_PIP_VERSION}" \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/* /tmp/* /var/log/apt/* /var/log/alternatives.log /var/log/dpkg.log /var/log/faillog /var/log/lastlog
+
+USER zsh
+ENV PATH=/home/zsh/.local/bin:/usr/local/bin:${PATH}
+
+WORKDIR /home/zsh
