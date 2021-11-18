@@ -1,10 +1,10 @@
 ARG PYTHON_XZ_GPG_KEY="E3FF2839C048B25C084DEBE9B26995E310250568"
-ARG PYTHON_VERSION="3.9.7"
+ARG PYTHON_VERSION="3.10.0"
 ARG PYTHON_PIP_VERSION="21.2.4"
-# https://github.com/docker-library/python/blob/master/3.9/buster/Dockerfile
-ARG PIP_DOWNLOAD_HASH="c20b0cfd643cd4a19246ccf204e2997af70f6b21"
+# https://github.com/docker-library/python/blob/master/3.10/buster/Dockerfile
+ARG PIP_DOWNLOAD_HASH="3cb8888cc2869620f57d5d2da64da38f516078c7"
 ARG PYTHON_GET_PIP_URL="https://github.com/pypa/get-pip/raw/${PIP_DOWNLOAD_HASH}/public/get-pip.py"
-ARG PYTHON_GET_PIP_SHA256="fa6f3fb93cce234cd4e8dd2beb54a51ab9c247653b52855a48dd44e6b21ff28b"
+ARG PYTHON_GET_PIP_SHA256="c518250e91a70d7b20cceb15272209a4ded2a0c263ae5776f129e0d9b5674309"
 ARG LLVM_VERSION=13
 
 FROM alpine:3 AS downloader
