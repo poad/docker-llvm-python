@@ -31,7 +31,7 @@ jobs:
       env:
         DOCKER_BUILDKIT: 1
       if: github.event_name == 'pull_request' && github.event_name != 'schedule'
-      run: docker build --rm --target="${{ matrix.stage_tag.stage }}" .
+      run: docker build --rm --progress=plain --target="${{ matrix.stage_tag.stage }}" .
     - name: Hadolint
       if: github.event_name == 'pull_request' && github.event_name != 'schedule'
       uses: brpaz/hadolint-action@v1.5.0
@@ -67,5 +67,5 @@ jobs:
       run: |
         IMAGE_NAME=poad/docker-llvm-python:${{ matrix.stage_tag.tag }} && \
         ls -al && \
-        docker build --rm --target="${{ matrix.stage_tag.stage }}" -t ${IMAGE_NAME} . && \
+        docker build --rm --progress=plain --target="${{ matrix.stage_tag.stage }}" -t ${IMAGE_NAME} . && \
         docker push ${IMAGE_NAME}

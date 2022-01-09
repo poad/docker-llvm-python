@@ -1,5 +1,5 @@
-ARG PYTHON_XZ_GPG_KEY="E3FF2839C048B25C084DEBE9B26995E310250568"
-ARG PYTHON_VERSION="3.10.0"
+ARG PYTHON_XZ_GPG_KEY="A035C8C19219BA821ECEA86B64E628F8D684696D"
+ARG PYTHON_VERSION="3.10.1"
 ARG PYTHON_PIP_VERSION="21.2.4"
 # https://github.com/docker-library/python/blob/master/3.10/buster/Dockerfile
 ARG PIP_DOWNLOAD_HASH="3cb8888cc2869620f57d5d2da64da38f516078c7"
@@ -35,11 +35,7 @@ RUN curl -sSLo get-pip.py "${PYTHON_GET_PIP_URL}" \
  && curl -sSLo python.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-${PYTHON_VERSION}.tar.xz" \
  && curl -sSLo python.tar.xz.asc "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-${PYTHON_VERSION}.tar.xz.asc" \
  && export GNUPGHOME="$(mktemp -d)" \
- && for key in "${PYTHON_XZ_GPG_KEY}"; do \
-   gpg --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "${key}" || \
-   gpg --batch --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "${key}" || \
-   gpg --batch --keyserver hkp://pgp.mit.edu:80 --recv-keys "${key}" ; \
- done \
+ && gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys "${PYTHON_XZ_GPG_KEY}" \
  && gpg --batch --verify python.tar.xz.asc python.tar.xz \
  && { command -v gpgconf > /dev/null && gpgconf --kill all || :; } \
  && rm -rf "${GNUPGHOME}" python.tar.xz.asc \
